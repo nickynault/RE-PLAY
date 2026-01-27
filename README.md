@@ -1,2 +1,60 @@
-# RE-PLAY
-RE:PLAY is a curated collection of classic game recreations, rebuilt with original code and modern design sensibilities.  It acts as a single launcher containing multiple self-contained games inspired by arcade and early console mechanics — focused on tight controls, clean presentation, and replayability.  No emulation. Just reinterpretations.
+# RE:PLAY
+
+**RE:PLAY** is a modular game launcher containing original recreations of classic game mechanics.  
+Each title is built from scratch and designed to stand alone, while sharing a common launcher, input system, and presentation layer.
+
+This project prioritizes:
+- Simple installation
+- Instant play
+- Clean, readable code
+- Faithful mechanics without copying IP or assets
+
+---
+
+## ✨ Features
+- Single launcher with multiple games
+- Original implementations inspired by classic titles
+- Keyboard and controller support
+- Consistent UI and settings across games
+- Offline play
+- Windows installer (no dependencies required)
+
+---
+
+## 🎮 Included Games (Initial Lineup)
+
+| Game | Description |
+|----|------------|
+| Paddle Duel | Classic paddle-based physics with modern polish |
+| Brickfall | Breaker-style game with powerups and level variety |
+| Void Drift | Asteroids-inspired physics shooter |
+| Invasion | Fixed-screen wave shooter |
+| Neon Run | Endless runner with increasing difficulty |
+| Micro Rogue | Fast, replayable roguelike-inspired arena |
+
+> Games are added incrementally as standalone “cartridges” inside the launcher.
+
+---
+
+## 🛠️ Built With
+- Python
+- Pygame
+- Nuitka (compilation)
+- Inno Setup (installer)
+
+---
+
+## 📦 Installation
+Download the installer from the **Releases** page and run it.  
+No additional software required.
+
+---
+
+## ⚖️ Legal
+All games are **original implementations** inspired by classic mechanics.  
+No original game code, assets, or trademarks are used.
+
+---
+
+## 📄 License
+MIT License — see [LICENSE](LICENSE)
