@@ -3,12 +3,13 @@ import sys
 from systems.game_manager import GameManager
 from games.paddle_game import PaddleGame
 from games.brickfall_game import BrickfallGame
+from games.void_drift_game import VoidDriftGame
 
 class LauncherGame:
     def __init__(self):
         self.selected_game = 0
         self.games = ["Paddle Duel", "Brickfall", "Void Drift"]
-        self.game_classes = [PaddleGame, BrickfallGame, PaddleGame]  # Paddle Duel, Brickfall, Void Drift
+        self.game_classes = [PaddleGame, BrickfallGame, VoidDriftGame]  # Paddle Duel, Brickfall, Void Drift
         
     def init(self, screen):
         self.screen = screen
