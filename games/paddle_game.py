@@ -53,8 +53,16 @@ class PaddleGame(Game):
             self.ball_speed_y *= -1
             
         # Paddle collisions
-        if self.ball.colliderect(self.left_paddle) or self.ball.colliderect(self.right_paddle):
+        # Left paddle
+        if self.ball.colliderect(self.left_paddle) and self.ball_speed_x < 0:
             self.ball_speed_x *= -1
+            self.ball.left = self.left_paddle.right  # push out
+
+        # Right paddle
+        if self.ball.colliderect(self.right_paddle) and self.ball_speed_x > 0:
+            self.ball_speed_x *= -1
+            self.ball.right = self.right_paddle.left  # push out
+
             
         # Scoring
         if self.ball.left <= 0:

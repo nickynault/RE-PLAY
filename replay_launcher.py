@@ -6,7 +6,7 @@ from games.paddle_game import PaddleGame
 class LauncherGame:
     def __init__(self):
         self.selected_game = 0
-        self.games = ["Dummy Game", "Paddle Duel", "Brickfall", "Void Drift"]
+        self.games = ["Paddle Duel", "Brickfall", "Void Drift"]
         self.game_classes = [PaddleGame] * len(self.games)  # Scalable: all games use PaddleGame for now
         
     def init(self, screen):
