@@ -10,8 +10,9 @@ class MenuState:
         self.small_font = pygame.font.Font(None, 32)
         self.selected_game = 0
         self.games = ["Dummy Game", "Paddle Duel", "Brickfall", "Void Drift"]
+        self.game_classes = [DummyGame, None, None, None]  # Index-based game classes
         
-    def handle_events(self):
+    def handle_events(self, manager):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -54,27 +55,24 @@ def main():
     clock = pygame.time.Clock()
     
     while manager.running:
-        result = menu.handle_events()
-        if result is False:
-            manager.running = False
-        elif isinstance(result, int):
-            # Start selected game
-            if result == 0:  # Dummy Game
-                dummy_game = DummyGame()
-                dummy_game.init(screen)
-                manager.set_game(dummy_game)
-                # Run game loop
-                while manager.running and manager.active_game:
-                    dt = clock.tick(60) / 1000.0
-                    manager.handle_events()
-                    manager.update(dt)
-                    manager.draw(screen)
-                # Return to menu
-                manager.active_game = None
-                continue
+        if manager.in_game:
+            # Game loop
+            dt = clock.tick(60) / 1000.0
+            manager.handle_events()
+            manager.update(dt)
+            manager.draw(screen)
+        else:
+            # Menu loop
+            result = menu.handle_events(manager)
+            if result is False:
+                manager.running = False
+            elif isinstance(result, int) and menu.game_classes[result]:
+                # Start selected game by index
+                manager.set_game_by_index(menu.game_classes[result], screen)
         
-        menu.draw()
-        clock.tick(60)
+        if not manager.in_game:
+            menu.draw()
+            clock.tick(60)
     
     pygame.quit()
     sys.exit()

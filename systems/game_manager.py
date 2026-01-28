@@ -4,10 +4,18 @@ class GameManager:
     def __init__(self):
         self.active_game = None
         self.running = True
-    def set_game(self, game):
+        self.in_game = False
+    def set_game_by_index(self, game_class, screen):
         if self.active_game:
             self.active_game.shutdown()
-        self.active_game = game
+        self.active_game = game_class()
+        self.active_game.init(screen)
+        self.in_game = True
+    def return_to_launcher(self):
+        if self.active_game:
+            self.active_game.shutdown()
+        self.active_game = None
+        self.in_game = False
     def update(self, dt):
         if self.active_game:
             self.active_game.update(dt)
@@ -22,4 +30,7 @@ class GameManager:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
+                    if self.in_game:
+                        self.return_to_launcher()
+                    else:
+                        self.running = False
