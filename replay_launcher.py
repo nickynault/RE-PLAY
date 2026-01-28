@@ -1,13 +1,13 @@
 import pygame
 import sys
 from systems.game_manager import GameManager
-from games.dummy_game import DummyGame
+from games.paddle_game import PaddleGame
 
 class LauncherGame:
     def __init__(self):
         self.selected_game = 0
         self.games = ["Dummy Game", "Paddle Duel", "Brickfall", "Void Drift"]
-        self.game_classes = [DummyGame] * len(self.games)  # Scalable: all games use DummyGame for now
+        self.game_classes = [PaddleGame] * len(self.games)  # Scalable: all games use PaddleGame for now
         
     def init(self, screen):
         self.screen = screen

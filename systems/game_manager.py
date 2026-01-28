@@ -1,6 +1,6 @@
 import pygame
 
-class GameManager:
+class GameManager: # This shouldn't change much now. 1/27/26
     def __init__(self, launcher_class=None):
         self.active_game = None
         self.running = True
