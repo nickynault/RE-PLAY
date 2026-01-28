@@ -14,7 +14,7 @@ This project prioritizes:
 ## ✨ Features
 - Single launcher with multiple games
 - Original implementations inspired by classic titles
-- Keyboard and controller support
+- Keyboard support
 - Consistent UI and settings across games
 - Offline play
 - Windows installer (no dependencies required)
@@ -28,19 +28,18 @@ This project prioritizes:
 | Paddle Duel | Classic paddle-based physics with modern polish |
 | Brickfall | Breaker-style game with powerups and level variety |
 | Void Drift | Asteroids-inspired physics shooter |
-| Invasion | Fixed-screen wave shooter |
-| Neon Run | Endless runner with increasing difficulty |
-| Micro Rogue | Fast, replayable roguelike-inspired arena |
+
 
 > Games are added incrementally as standalone “cartridges” inside the launcher.
 
 ---
 
 ## 🛠️ Built With
-- Python
+- Python 3.x
 - Pygame
 - Nuitka (compilation)
 - Inno Setup (installer)
+- PyInstaller (alternative packaging tool)
 
 ---
 
