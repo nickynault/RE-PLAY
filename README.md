@@ -48,6 +48,12 @@ This project prioritizes:
 Download the installer from the **Releases** page and run it.  
 No additional software required.
 
+## 🎮 Running the Game
+- **From Source**: `python replay_launcher.py` (requires Python + pygame)
+- **From Executable**: Download `RE-PLAY.exe` from Releases and double-click to play
+- **Windows Defender**: May show SmartScreen warning on first run - this is normal for unsigned executables
+- **No Dependencies**: The .exe includes everything needed to run
+
 ---
 
 ## ⚖️ Legal
