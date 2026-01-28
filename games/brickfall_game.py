@@ -1,4 +1,5 @@
 import pygame
+import random
 from systems.game import Game
 
 class BrickfallGame(Game):
@@ -17,9 +18,16 @@ class BrickfallGame(Game):
         
     def init(self, screen):
         self.screen = screen
+        self.font = pygame.font.Font(None, 48)
         self.reset_game()
         
     def reset_game(self):
+        # Game state
+        self.score = 0
+        self.lives = 3
+        self.game_won = False
+        self.win_timer = 0
+        
         # Paddle
         self.paddle = pygame.Rect(self.width // 2 - self.paddle_width // 2, self.height - 50, self.paddle_width, self.paddle_height)
         
@@ -38,6 +46,12 @@ class BrickfallGame(Game):
 
                 
     def update(self, dt):
+        if self.game_won:
+            self.win_timer += dt
+            if self.win_timer > 2.0:
+                self.reset_game()
+            return
+            
         keys = pygame.key.get_pressed()
         
         # Paddle movement (Left/Right arrows)
@@ -60,14 +74,12 @@ class BrickfallGame(Game):
         if self.ball.colliderect(self.paddle) and self.ball_speed_y > 0:
             self.ball_speed_y *= -1
             self.ball.top = self.paddle.top - self.ball.height  # push ball above paddle
-            # Adjust x direction based on where ball hits paddle
+            # Adjust x speed based on where ball hits paddle
             paddle_center = self.paddle.centerx
             ball_center = self.ball.centerx
-            if ball_center < paddle_center:
-                self.ball_speed_x = -abs(self.ball_speed_x)
-            else:
-                self.ball_speed_x = abs(self.ball_speed_x)
-
+            hit_position = (ball_center - paddle_center) / (self.paddle_width / 2)
+            self.ball_speed_x = hit_position * 6  # Vary horizontal speed
+            self.ball_speed_x += random.uniform(-0.5, 0.5)  # Add slight randomness
         
         # Block collisions
         for block in self.blocks[:]:
@@ -82,23 +94,41 @@ class BrickfallGame(Game):
                     self.ball.top = block.bottom
                 else:
                     self.ball_speed_x *= -1
+                self.score += 1
                 break
-
-
+                
+        # Check win condition
+        if len(self.blocks) == 0:
+            self.game_won = True
+            
         # Reset ball if it goes off bottom
         if self.ball.bottom >= self.height:
-            self.reset_game()
+            self.lives -= 1
+            if self.lives <= 0:
+                self.reset_game()
+            else:
+                self.ball.center = (self.width // 2, self.height // 2)
+                self.ball_speed_x = 5
+                self.ball_speed_y = 5
             
     def draw(self, screen):
         screen.fill((0, 0, 0))
         
-        # Draw paddle and ball
-        pygame.draw.rect(screen, (255, 255, 255), self.paddle)
-        pygame.draw.ellipse(screen, (255, 255, 255), self.ball)
-        
-        # Draw blocks
-        for block in self.blocks:
-            pygame.draw.rect(screen, (0, 255, 0), block)
+        if self.game_won:
+            win_text = self.font.render("You Win!", True, (255, 255, 255))
+            screen.blit(win_text, (self.width // 2 - win_text.get_width() // 2, self.height // 2))
+        else:
+            # Draw paddle and ball
+            pygame.draw.rect(screen, (255, 255, 255), self.paddle)
+            pygame.draw.ellipse(screen, (255, 255, 255), self.ball)
+            
+            # Draw blocks
+            for block in self.blocks:
+                pygame.draw.rect(screen, (0, 255, 0), block)
+            
+            # Draw UI
+            score_text = self.font.render(f"Score: {self.score}  Lives: {self.lives}", True, (255, 255, 255))
+            screen.blit(score_text, (self.width // 2 - score_text.get_width() // 2, 10))
             
         pygame.display.flip()
         
