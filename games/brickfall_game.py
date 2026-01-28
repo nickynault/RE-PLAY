@@ -27,12 +27,15 @@ class BrickfallGame(Game):
         self.ball = pygame.Rect(self.width // 2 - self.ball_size // 2, self.height // 2 - self.ball_size // 2, self.ball_size, self.ball_size)
         
         # Blocks (3 rows, 5 columns)
+        # Replace block setup in reset_game()
         self.blocks = []
+        cols = self.width // (self.block_width + self.block_gap)
         for row in range(3):
-            for col in range(5):
-                x = 50 + col * (self.block_width + self.block_gap)
+            for col in range(cols):
+                x = col * (self.block_width + self.block_gap)
                 y = 50 + row * (self.block_height + self.block_gap)
                 self.blocks.append(pygame.Rect(x, y, self.block_width, self.block_height))
+
                 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -70,14 +73,21 @@ class BrickfallGame(Game):
         for block in self.blocks[:]:
             if self.ball.colliderect(block):
                 self.blocks.remove(block)
-                self.ball_speed_y *= -1
+                # Determine which side we hit
+                if abs(self.ball.bottom - block.top) < 10 and self.ball_speed_y > 0:
+                    self.ball_speed_y *= -1
+                    self.ball.bottom = block.top
+                elif abs(self.ball.top - block.bottom) < 10 and self.ball_speed_y < 0:
+                    self.ball_speed_y *= -1
+                    self.ball.top = block.bottom
+                else:
+                    self.ball_speed_x *= -1
                 break
-                
+
+
         # Reset ball if it goes off bottom
         if self.ball.bottom >= self.height:
-            self.ball.center = (self.width // 2, self.height // 2)
-            self.ball_speed_x = 5
-            self.ball_speed_y = 5
+            self.reset_game()
             
     def draw(self, screen):
         screen.fill((0, 0, 0))
