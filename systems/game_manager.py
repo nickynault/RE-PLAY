@@ -28,20 +28,24 @@ class GameManager: # This shouldn't change much now. 1/27/26
             self.active_game.draw(screen)
         pygame.display.flip()
     def handle_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    if self.in_game and self.active_game.__class__.__name__ != 'LauncherGame':
-                        self.return_to_launcher(self.launcher_class)
-                    else:
-                        self.running = False
-                elif self.in_game and self.active_game.__class__.__name__ == 'LauncherGame':
-                    if event.key == pygame.K_DOWN:
-                        self.active_game.selected_game = (self.active_game.selected_game + 1) % len(self.active_game.games)
-                    elif event.key == pygame.K_UP:
-                        self.active_game.selected_game = (self.active_game.selected_game - 1) % len(self.active_game.games)
-                    elif event.key == pygame.K_RETURN:
-                        if self.active_game.selected_game < len(self.active_game.game_classes) and self.active_game.game_classes[self.active_game.selected_game]:
-                            self.set_game_by_index(self.active_game.game_classes[self.active_game.selected_game], self.active_game.screen)
+        try:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        if self.in_game and self.active_game and self.active_game.__class__.__name__ != 'LauncherGame':
+                            self.return_to_launcher(self.launcher_class)
+                        else:
+                            self.running = False
+                    elif self.in_game and self.active_game and self.active_game.__class__.__name__ == 'LauncherGame':
+                        if event.key == pygame.K_DOWN:
+                            self.active_game.selected_game = (self.active_game.selected_game + 1) % len(self.active_game.games)
+                        elif event.key == pygame.K_UP:
+                            self.active_game.selected_game = (self.active_game.selected_game - 1) % len(self.active_game.games)
+                        elif event.key == pygame.K_RETURN:
+                            if self.active_game.selected_game < len(self.active_game.game_classes) and self.active_game.game_classes[self.active_game.selected_game]:
+                                self.set_game_by_index(self.active_game.game_classes[self.active_game.selected_game], self.active_game.screen)
+        except Exception as e:
+            print(f"ERROR in handle_events: {e}")
+            self.running = False

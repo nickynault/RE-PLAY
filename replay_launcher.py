@@ -50,14 +50,23 @@ def main():
     
     clock = pygame.time.Clock()
     
-    while manager.running:
-        dt = clock.tick(60) / 1000.0
-        manager.handle_events()
-        manager.update(dt)
-        manager.draw(screen)
-    
-    pygame.quit()
-    sys.exit()
+    try:
+        while manager.running:
+            dt = clock.tick(60) / 1000.0
+            if dt < 0:
+                print(f"WARNING: Negative dt value: {dt}")
+                dt = 0.016  # Fallback to ~60 FPS
+            manager.handle_events()
+            manager.update(dt)
+            manager.draw(screen)
+    except Exception as e:
+        print(f"ERROR in main game loop: {e}")
+        import traceback
+        traceback.print_exc()
+    finally:
+        print("Game shutting down...")
+        pygame.quit()
+        sys.exit()
 
 if __name__ == "__main__":
     main()
