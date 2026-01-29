@@ -69,7 +69,9 @@ class BrickfallGame(Game):
         
     def init(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 48)
+        # Use readable system fonts consistently
+        self.font = pygame.font.Font(None, 48)        # main game font
+        self.small_font = pygame.font.Font(None, 24)  # smaller UI elements
         
         # Initialize high score manager
         self.high_score_manager = HighScoreManager()
@@ -185,11 +187,11 @@ class BrickfallGame(Game):
             for block in self.blocks:
                 pygame.draw.rect(screen, (0, 255, 0), block)
             
-            # Draw UI
-            score_text = self.font.render(f"Score: {self.score}  Lives: {self.lives}", True, (255, 255, 255))
-            high_score_text = self.font.render(f"High Score: {self.current_high_score}", True, (255, 215, 0))  # Gold color
-            screen.blit(score_text, (self.width // 2 - score_text.get_width() // 2, 10))
-            screen.blit(high_score_text, (self.width // 2 - high_score_text.get_width() // 2, 60))
+            # Draw UI - moved to bottom to avoid overlapping with blocks
+            score_text = self.small_font.render(f"Score: {self.score}  Lives: {self.lives}", True, (255, 255, 255))
+            high_score_text = self.small_font.render(f"High Score: {self.current_high_score}", True, (255, 215, 0))  # Gold color
+            screen.blit(score_text, (10, self.height - 40))
+            screen.blit(high_score_text, (10, self.height - 70))
             
         pygame.display.flip()
         

@@ -14,8 +14,9 @@ class LauncherGame:
         
     def init(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 48)
-        self.small_font = pygame.font.Font(None, 32)
+        # Use readable system fonts with arcade feel
+        self.font = pygame.font.Font(None, 48)  # Large readable font
+        self.small_font = pygame.font.Font(None, 32)  # Medium readable font
         self.update_buttons()
         
     def update_buttons(self):
@@ -53,8 +54,23 @@ class LauncherGame:
     def draw(self, screen):
         screen.fill((0, 0, 0))
         
-        title = self.font.render("RE:PLAY", True, (255, 255, 255))
-        screen.blit(title, (screen.get_width() // 2 - title.get_width() // 2, 100))
+        # Draw title with 3D effect and border
+        title_text = "RE:PLAY"
+        title_main = self.font.render(title_text, True, (255, 255, 255))
+        title_shadow = self.font.render(title_text, True, (0, 255, 255))  # Cyan shadow for 3D effect
+        
+        title_x = screen.get_width() // 2 - title_main.get_width() // 2
+        title_y = 100
+        
+        # Draw shadow (offset for 3D effect)
+        screen.blit(title_shadow, (title_x + 4, title_y + 4))
+        # Draw main title
+        screen.blit(title_main, (title_x, title_y))
+        
+        # Draw title border
+        title_rect = title_main.get_rect(topleft=(title_x, title_y))
+        pygame.draw.rect(screen, (0, 255, 255), title_rect, 3)  # Cyan border
+        pygame.draw.rect(screen, (255, 255, 255), title_rect.inflate(8, 8), 2)  # Outer white border
         
         # Draw game buttons with hover effects
         mouse_pos = pygame.mouse.get_pos()

@@ -14,7 +14,9 @@ class PaddleGame(Game):
         
     def init(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 48)
+        # Use readable system fonts consistently
+        self.font = pygame.font.Font(None, 48)        # main game font
+        self.small_font = pygame.font.Font(None, 24)  # smaller UI elements
         self.reset_game()
         
     def reset_game(self):

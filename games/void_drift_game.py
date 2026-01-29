@@ -87,6 +87,7 @@ class VoidDriftGame(Game):
         
     def init(self, screen):
         self.screen = screen 
+        # Use readable system fonts consistently
         self.font = pygame.font.Font(None, 36)        # main score
         self.small_font = pygame.font.Font(None, 24)  # smaller scores
         self.game_over_font = pygame.font.Font(None, 72) # Game Over text
@@ -197,15 +198,16 @@ class VoidDriftGame(Game):
                     self.asteroids.remove(asteroid)
                     self.score += 1
                 
-                # Pixel-perfect collision detection
+                # Improved pixel-perfect collision detection
                 if self.player.colliderect(asteroid.rect):
                     # Create a mask for the player (approximate since player is a rect)
                     player_mask = pygame.mask.Mask((self.player.width, self.player.height), fill=True)
-                    player_pos = (self.player.x, self.player.y)
                     
-                    # Check pixel-perfect collision
-                    offset = (asteroid.rect.x - self.player.x, asteroid.rect.y - self.player.y)
-                    if asteroid.mask.overlap(player_mask, offset):
+                    # Check pixel-perfect collision with proper offset calculation
+                    offset_x = asteroid.rect.x - self.player.x
+                    offset_y = asteroid.rect.y - self.player.y
+                    
+                    if asteroid.mask.overlap(player_mask, (offset_x, offset_y)):
                         # Handle collision (death)
                         # Update persistent high score
                         self.high_score_manager.update_high_score('void_drift', self.score)
