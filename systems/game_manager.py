@@ -46,6 +46,20 @@ class GameManager: # This shouldn't change much now. 1/27/26
                         elif event.key == pygame.K_RETURN:
                             if self.active_game.selected_game < len(self.active_game.game_classes) and self.active_game.game_classes[self.active_game.selected_game]:
                                 self.set_game_by_index(self.active_game.game_classes[self.active_game.selected_game], self.active_game.screen)
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left click
+                    if self.in_game and self.active_game and self.active_game.__class__.__name__ == 'LauncherGame':
+                        mouse_pos = pygame.mouse.get_pos()
+                        for button in self.active_game.buttons:
+                            if button['rect'].collidepoint(mouse_pos):
+                                if 'action' in button and button['action'] == 'reset_scores':
+                                    # Handle reset high scores
+                                    self.active_game.reset_high_scores()
+                                elif 'index' in button:
+                                    # Select game
+                                    self.active_game.selected_game = button['index']
+                                    # Auto-start game on click
+                                    if self.active_game.selected_game < len(self.active_game.game_classes) and self.active_game.game_classes[self.active_game.selected_game]:
+                                        self.set_game_by_index(self.active_game.game_classes[self.active_game.selected_game], self.active_game.screen)
         except Exception as e:
             print(f"ERROR in handle_events: {e}")
             self.running = False

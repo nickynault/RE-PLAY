@@ -1,6 +1,57 @@
 import pygame
 import random
 from systems.game import Game
+import json
+import os
+
+class HighScoreManager:
+    """Manages persistent high scores for games"""
+    
+    def __init__(self, save_file="high_scores.json"):
+        self.save_file = save_file
+        self.scores = self.load_scores()
+    
+    def load_scores(self):
+        """Load high scores from file"""
+        try:
+            if os.path.exists(self.save_file):
+                with open(self.save_file, 'r') as f:
+                    data = json.load(f)
+                    # Ensure all expected games exist with default 0 values
+                    if "void_drift" not in data:
+                        data["void_drift"] = 0
+                    if "brickfall" not in data:
+                        data["brickfall"] = 0
+                    return data
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+        
+        # Return default scores if file doesn't exist or is corrupted
+        return {
+            "void_drift": 0,
+            "brickfall": 0
+        }
+    
+    def save_scores(self):
+        """Save high scores to file"""
+        try:
+            with open(self.save_file, 'w') as f:
+                json.dump(self.scores, f, indent=2)
+        except Exception as e:
+            print(f"Error saving high scores: {e}")
+    
+    def get_high_score(self, game_name):
+        """Get high score for a specific game"""
+        return self.scores.get(game_name, 0)
+    
+    def update_high_score(self, game_name, new_score):
+        """Update high score for a specific game"""
+        current_high = self.get_high_score(game_name)
+        if new_score > current_high:
+            self.scores[game_name] = new_score
+            self.save_scores()
+            return True
+        return False
 
 class Asteroid:
     """Asteroid object that stores both rect and image for proper collision and rendering"""
@@ -20,12 +71,14 @@ class VoidDriftGame(Game):
         self.asteroid_speed = 4
         self.asteroid_spawn_rate = 60  # frames between spawns
         self.score_multiplier = 10  # Score increases by 10 per second
-        self.high_score = 0
         self.hit_flash_timer = 0 
         self.game_over = False
         self.game_over_timer = 0  
         self.depixelation_progress = 0  # 0 to 1 for depixelation effect
         
+        # High score manager for persistent storage
+        self.high_score_manager = None
+        self.current_high_score = 0
         
         # Visual assets
         self.player_image = None
@@ -37,6 +90,10 @@ class VoidDriftGame(Game):
         self.font = pygame.font.Font(None, 36)        # main score
         self.small_font = pygame.font.Font(None, 24)  # smaller scores
         self.game_over_font = pygame.font.Font(None, 72) # Game Over text
+        
+        # Initialize high score manager
+        self.high_score_manager = HighScoreManager()
+        self.current_high_score = self.high_score_manager.get_high_score('void_drift')
         
         # Load assets
         try:
@@ -103,14 +160,14 @@ class VoidDriftGame(Game):
                 self.depixelation_progress = 0
             # Don't process movement or asteroids, but continue the loop
         else:
-            # Player movement
-            if keys[pygame.K_LEFT] and self.player.left > 0:
+            # Player movement (Arrow keys and WASD)
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.player.left > 0:
                 self.player.x -= self.player_speed
-            if keys[pygame.K_RIGHT] and self.player.right < self.width:
+            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.player.right < self.width:
                 self.player.x += self.player_speed
-            if keys[pygame.K_UP] and self.player.top > 0:
+            if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.top > 0:
                 self.player.y -= self.player_speed
-            if keys[pygame.K_DOWN] and self.player.bottom < self.height:
+            if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.player.bottom < self.height:
                 self.player.y += self.player_speed
 
             # Spawn asteroids
@@ -150,8 +207,10 @@ class VoidDriftGame(Game):
                     offset = (asteroid.rect.x - self.player.x, asteroid.rect.y - self.player.y)
                     if asteroid.mask.overlap(player_mask, offset):
                         # Handle collision (death)
-                        if self.score > self.high_score:
-                            self.high_score = self.score
+                        # Update persistent high score
+                        self.high_score_manager.update_high_score('void_drift', self.score)
+                        self.current_high_score = self.high_score_manager.get_high_score('void_drift')
+                        
                         self.hit_flash_timer = 0.2
                         self.game_over = True
                         self.game_over_timer = 4.0
@@ -212,7 +271,7 @@ class VoidDriftGame(Game):
         
         # Draw score
         score_text = self.font.render(f"Score: {int(self.score)}", True, (255, 255, 255))
-        high_score_text = self.font.render(f"High Score: {int(self.high_score)}", True, (255, 255, 255))
+        high_score_text = self.font.render(f"High Score: {int(self.current_high_score)}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
         screen.blit(high_score_text, (10, 50))
 

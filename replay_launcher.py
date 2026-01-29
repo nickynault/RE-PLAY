@@ -10,11 +10,42 @@ class LauncherGame:
         self.selected_game = 0
         self.games = ["Paddle Duel", "Brickfall", "Void Drift"]
         self.game_classes = [PaddleGame, BrickfallGame, VoidDriftGame]  # Paddle Duel, Brickfall, Void Drift
+        self.buttons = []
         
     def init(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(None, 48)
         self.small_font = pygame.font.Font(None, 32)
+        self.update_buttons()
+        
+    def update_buttons(self):
+        """Update button positions based on screen size"""
+        self.buttons = []
+        for i, game_name in enumerate(self.games):
+            text = self.small_font.render(game_name, True, (255, 255, 255))
+            x = self.screen.get_width() // 2 - text.get_width() // 2
+            y = 200 + i * 50
+            width = text.get_width() + 20
+            height = text.get_height() + 10
+            self.buttons.append({
+                'rect': pygame.Rect(x - 10, y - 5, width, height),
+                'text': game_name,
+                'index': i,
+                'text_surface': text
+            })
+        
+        # Add Reset High Scores button
+        reset_text = self.small_font.render("Reset High Scores", True, (255, 100, 100))
+        reset_x = self.screen.get_width() // 2 - reset_text.get_width() // 2
+        reset_y = 200 + len(self.games) * 50 + 30
+        reset_width = reset_text.get_width() + 20
+        reset_height = reset_text.get_height() + 10
+        self.buttons.append({
+            'rect': pygame.Rect(reset_x - 10, reset_y - 5, reset_width, reset_height),
+            'text': "Reset High Scores",
+            'action': 'reset_scores',
+            'text_surface': reset_text
+        })
         
     def update(self, dt):
         pass
@@ -25,10 +56,37 @@ class LauncherGame:
         title = self.font.render("RE:PLAY", True, (255, 255, 255))
         screen.blit(title, (screen.get_width() // 2 - title.get_width() // 2, 100))
         
-        for i, game_name in enumerate(self.games):
-            color = (255, 255, 255) if i == self.selected_game else (100, 100, 100)
-            text = self.small_font.render(f"> {game_name}" if i == self.selected_game else f"  {game_name}", True, color)
-            screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, 200 + i * 50))
+        # Draw game buttons with hover effects
+        mouse_pos = pygame.mouse.get_pos()
+        for button in self.buttons[:-1]:  # All buttons except reset
+            is_hovered = button['rect'].collidepoint(mouse_pos)
+            is_selected = button['index'] == self.selected_game
+            
+            # Determine if this button should be highlighted
+            should_highlight = is_hovered or is_selected
+            
+            # Draw button background if highlighted (either by hover or keyboard selection)
+            if should_highlight:
+                pygame.draw.rect(screen, (50, 50, 50), button['rect'])
+                pygame.draw.rect(screen, (200, 200, 200), button['rect'], 2)
+            
+            # Draw text
+            text_x = button['rect'].x + 10
+            text_y = button['rect'].y + 5
+            screen.blit(button['text_surface'], (text_x, text_y))
+        
+        # Draw Reset High Scores button
+        reset_button = self.buttons[-1]
+        is_hovered = reset_button['rect'].collidepoint(mouse_pos)
+        reset_color = (255, 100, 100) if is_hovered else (200, 50, 50)
+        
+        if is_hovered:
+            pygame.draw.rect(screen, (50, 25, 25), reset_button['rect'])
+            pygame.draw.rect(screen, (255, 100, 100), reset_button['rect'], 2)
+        
+        text_x = reset_button['rect'].x + 10
+        text_y = reset_button['rect'].y + 5
+        screen.blit(reset_button['text_surface'], (text_x, text_y))
             
         instructions = self.small_font.render("Use UP/DOWN to navigate, ENTER to select, ESC to quit", True, (200, 200, 200))
         screen.blit(instructions, (screen.get_width() // 2 - instructions.get_width() // 2, screen.get_height() - 50))
@@ -37,6 +95,30 @@ class LauncherGame:
         
     def shutdown(self):
         pass
+        
+    def reset_high_scores(self):
+        """Reset all high scores to 0"""
+        try:
+            import json
+            import os
+            
+            # Reset the high scores file
+            high_scores_data = {
+                "void_drift": 0,
+                "brickfall": 0
+            }
+            
+            with open("high_scores.json", 'w') as f:
+                json.dump(high_scores_data, f, indent=2)
+            
+            print("High scores have been reset to 0!")
+            
+            # Update current high scores in memory for any active games
+            if hasattr(self, 'buttons'):
+                self.update_buttons()
+                
+        except Exception as e:
+            print(f"Error resetting high scores: {e}")
 
 def main():
     pygame.init()

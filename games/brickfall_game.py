@@ -1,6 +1,57 @@
 import pygame
 import random
 from systems.game import Game
+import json
+import os
+
+class HighScoreManager:
+    """Manages persistent high scores for games"""
+    
+    def __init__(self, save_file="high_scores.json"):
+        self.save_file = save_file
+        self.scores = self.load_scores()
+    
+    def load_scores(self):
+        """Load high scores from file"""
+        try:
+            if os.path.exists(self.save_file):
+                with open(self.save_file, 'r') as f:
+                    data = json.load(f)
+                    # Ensure all expected games exist with default 0 values
+                    if "void_drift" not in data:
+                        data["void_drift"] = 0
+                    if "brickfall" not in data:
+                        data["brickfall"] = 0
+                    return data
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+        
+        # Return default scores if file doesn't exist or is corrupted
+        return {
+            "void_drift": 0,
+            "brickfall": 0
+        }
+    
+    def save_scores(self):
+        """Save high scores to file"""
+        try:
+            with open(self.save_file, 'w') as f:
+                json.dump(self.scores, f, indent=2)
+        except Exception as e:
+            print(f"Error saving high scores: {e}")
+    
+    def get_high_score(self, game_name):
+        """Get high score for a specific game"""
+        return self.scores.get(game_name, 0)
+    
+    def update_high_score(self, game_name, new_score):
+        """Update high score for a specific game"""
+        current_high = self.get_high_score(game_name)
+        if new_score > current_high:
+            self.scores[game_name] = new_score
+            self.save_scores()
+            return True
+        return False
 
 class BrickfallGame(Game):
     def __init__(self):
@@ -19,6 +70,11 @@ class BrickfallGame(Game):
     def init(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(None, 48)
+        
+        # Initialize high score manager
+        self.high_score_manager = HighScoreManager()
+        self.current_high_score = self.high_score_manager.get_high_score('brickfall')
+        
         self.reset_game()
         
     def reset_game(self):
@@ -105,6 +161,9 @@ class BrickfallGame(Game):
         if self.ball.bottom >= self.height:
             self.lives -= 1
             if self.lives <= 0:
+                # Update persistent high score when game is over
+                self.high_score_manager.update_high_score('brickfall', self.score)
+                self.current_high_score = self.high_score_manager.get_high_score('brickfall')
                 self.reset_game()
             else:
                 self.ball.center = (self.width // 2, self.height // 2)
@@ -128,7 +187,9 @@ class BrickfallGame(Game):
             
             # Draw UI
             score_text = self.font.render(f"Score: {self.score}  Lives: {self.lives}", True, (255, 255, 255))
+            high_score_text = self.font.render(f"High Score: {self.current_high_score}", True, (255, 215, 0))  # Gold color
             screen.blit(score_text, (self.width // 2 - score_text.get_width() // 2, 10))
+            screen.blit(high_score_text, (self.width // 2 - high_score_text.get_width() // 2, 60))
             
         pygame.display.flip()
         
