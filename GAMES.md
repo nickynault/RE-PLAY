@@ -1,6 +1,6 @@
 # RE:PLAY — Game Roadmap
 
-This document tracks current, planned, and experimental games for RE:PLAY.
+This document tracks current games for RE:PLAY.
 
 ---
 
@@ -20,31 +20,6 @@ This document tracks current, planned, and experimental games for RE:PLAY.
 - Thrust-based ship movement
 - Screen wrapping
 - Procedural asteroid splitting
-
-### Invasion
-- Descending enemy formations
-- Degrading cover
-- Wave-based difficulty
-
-### Neon Run
-- Endless side-scrolling runner
-- Tight jump timing
-- Score attack focus
-
-### Micro Rogue
-- Single-screen arena
-- Randomized modifiers
-- Short runs (2–4 minutes)
-
----
-
-## 🧪 Experimental / Future Ideas
-- Top-down tank duel (ricochet shots)
-- Bullet-hell survival arena
-- Match-3 with combo systems
-- Mini turn-based tactics board
-- Physics-based precision platformer
-
 ---
 
 ## ❌ Explicit Non-Goals

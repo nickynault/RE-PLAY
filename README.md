@@ -21,7 +21,7 @@ This project prioritizes:
 
 ---
 
-## 🎮 Included Games (Initial Lineup)
+## 🎮 Included Games
 
 | Game | Description |
 |----|------------|
@@ -49,7 +49,7 @@ No additional software required.
 
 ## 🎮 Running the Game
 - **From Source**: `python replay_launcher.py` (requires Python + pygame)
-- **From Executable**: Download `RE-PLAY.exe` from Releases and double-click to play (or, [⬇ Download RE:PLAY's newest version (Windows)](https://github.com/nickynault/RE-PLAY/releases/download/v0.1.0/RE-PLAY_v0.1.0.exe)
+- **From Executable**: Download `RE-PLAY.exe` from Releases and double-click to play (or, [⬇ Download RE:PLAY's newest version (Windows)](https://github.com/nickynault/RE-PLAY/releases/download/v0.1.0/RE-PLAY_v0.1.1.exe)
 )
 - **Windows Defender**: May show SmartScreen warning on first run - this is normal for unsigned executables
 - **No Dependencies**: The .exe includes everything needed to run
