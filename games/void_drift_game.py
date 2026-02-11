@@ -58,7 +58,8 @@ class Asteroid:
     def __init__(self, x, y, width, height, image):
         self.rect = pygame.Rect(x, y, width, height)
         self.image = image
-        # Create a mask for pixel-perfect collision detection
+        # Create a mask for pixel-perfect collision detection from the scaled image
+        # This ensures the mask matches the actual rendered size and shape
         self.mask = pygame.mask.from_surface(image)
 
 class VoidDriftGame(Game):
@@ -198,15 +199,24 @@ class VoidDriftGame(Game):
                     self.asteroids.remove(asteroid)
                     self.score += 1
                 
-                # Improved pixel-perfect collision detection
+                # Improved collision detection with proper pixel-perfect masks
+                # First check bounding box collision for performance
                 if self.player.colliderect(asteroid.rect):
-                    # Create a mask for the player (approximate since player is a rect)
-                    player_mask = pygame.mask.Mask((self.player.width, self.player.height), fill=True)
+                    # Create player mask from the actual player image for accurate collision
+                    if self.player_image:
+                        # Scale player image to match rect size and create mask
+                        player_surface = pygame.transform.scale(self.player_image, (self.player.width, self.player.height))
+                        player_mask = pygame.mask.from_surface(player_surface)
+                    else:
+                        # Fallback to rectangular mask if no image
+                        player_mask = pygame.mask.Mask((self.player.width, self.player.height), fill=True)
                     
-                    # Check pixel-perfect collision with proper offset calculation
+                    # Calculate offset for mask overlap check
+                    # Offset is (asteroid_x - player_x, asteroid_y - player_y)
                     offset_x = asteroid.rect.x - self.player.x
                     offset_y = asteroid.rect.y - self.player.y
                     
+                    # Check pixel-perfect collision
                     if asteroid.mask.overlap(player_mask, (offset_x, offset_y)):
                         # Handle collision (death)
                         # Update persistent high score
